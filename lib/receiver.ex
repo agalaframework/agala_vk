@@ -3,7 +3,7 @@ defmodule Agala.Provider.Vk.Receiver do
   Main worker module
   """
   @vsn 2
-  use Agala.Bot.PollServer
+  use Agala.Bot.Receiver
   alias Agala.BotParams
 
   defp get_updates_url(%BotParams{private: %{
@@ -42,7 +42,40 @@ defmodule Agala.Provider.Vk.Receiver do
       }
     },
     bot_params
-  ), do: bot_params |> put_in([:private, :ts], ts)
+  ) do
+    bot_params |> put_in([:private, :ts], ts)
+    # We are seting ts to the safe place in order to get if this poller will
+    # be restarted
+    Agala.set(bot_params, :poll_server_ts, ts)
+  end
+  defp resolve_updates(
+    {
+      :ok,
+      %HTTPoison.Response{
+        status_code: 200,
+        body: %{"ts" => ts, "failed" => 1}
+      }
+    },
+    bot_params
+  ) do
+    Logger.debug "History is corrupted, resending with new ts..."
+    bot_params |> put_in([:private, :ts], ts)
+    Agala.set(bot_params, :poll_server_ts, ts)
+  end
+  defp resolve_updates(
+    {
+      :ok,
+      %HTTPoison.Response{
+        status_code: 200,
+        body: %{"failed" => _}
+      }
+    },
+    bot_params
+  ) do
+    Logger.debug "LongPolling server params are corrupted, restarting reciever..."
+    bot_params |> put_in([:private, :restart], true)
+  end
+
   defp resolve_updates(
     {
       :error,
@@ -73,8 +106,8 @@ defmodule Agala.Provider.Vk.Receiver do
     |> Enum.each(&(process_message(&1, bot_params)))
     bot_params |> put_in([:private, :ts], ts)
   end
-  defp resolve_updates({:ok, %HTTPoison.Response{status_code: status_code}}, bot_params) do
-    Logger.warn("HTTP response ended with status code #{status_code}")
+  defp resolve_updates({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, bot_params) do
+    Logger.warn("HTTP response ended with status code #{status_code}\nand body:\n#{body}")
     bot_params
   end
   defp resolve_updates({:error, err}, bot_params) do
@@ -90,7 +123,7 @@ defmodule Agala.Provider.Vk.Receiver do
   defp process_message(message, bot_params) do
     # Cast received message to handle bank, there the message
     # will be proceeded throw handlers pipe
-    Agala.Bot.Handler.cast_to_handle(
+    Agala.Bot.Handler.cast_to_chain(
       message,
       bot_params
     )

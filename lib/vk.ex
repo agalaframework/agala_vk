@@ -23,7 +23,8 @@ defmodule Agala.Provider.Vk do
       {:ok, bot_params
         |> put_in([:private, :key], server_params["key"])
         |> put_in([:private, :server], server_params["server"])
-        |> put_in([:private, :ts], server_params["ts"])
+        # If server was corrupted, we dont want to lose updates so we shift ts a bit back
+        |> put_in([:private, :ts], Agala.get(bot_params, :poll_server_ts) || server_params["ts"])
         |> put_in([:private, :pts], server_params["pts"])
       }
     else
@@ -47,14 +48,14 @@ defmodule Agala.Provider.Vk do
   end
 
   #TODO
-  defp set_mode(bot_params) do
+  defp set_mode(_bot_params) do
     2+           # get media
     32+          # get pts
     128          # get `random_id`
   end
 
   # This method sets `hackney` timeout params, depends on what is the type of
-  # the worker - for poller it' infinty, for sender - normal values
+  # the worker - for poller it's infinty, for sender - normal values
   defp set_timeout(http_opts, bot_params, module) do
     source = case module do
       :receiver -> :poll_timeout
