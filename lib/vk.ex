@@ -49,7 +49,7 @@ defmodule Agala.Provider.Vk do
         access_token: bot_params.provider_params.token,
         v: api_version()},
       @headers,
-      bot_params.hackney_opts |> set_timeout(bot_params, :responser)
+      Map.get(bot_params, :hackney_opts, []) |> set_timeout(bot_params, :responser)
     )
   end
 
