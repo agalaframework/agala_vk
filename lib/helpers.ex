@@ -22,7 +22,7 @@ defmodule Agala.Provider.Vk.Helpers do
   ]
   """
   def send_message(conn, name, user_id, message, opts \\ []) do
-    Map.put(conn, :response, %Agala.Provider.Telegram.Conn.Response{
+    Map.put(conn, :response, %Agala.Provider.Vk.Conn.Response{
       method: :post,
       payload: %{
         endpoint: Vk.base_url("messages.send"),

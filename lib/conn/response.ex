@@ -1,11 +1,11 @@
-defmodule Agala.Provider.Telegram.Conn.Response do
+defmodule Agala.Provider.Vk.Conn.Response do
   defstruct [
     method: :get,
     payload: %{},
     opts: []
   ]
 
-  @type t :: %Agala.Provider.Telegram.Conn.Response{
+  @type t :: %Agala.Provider.Vk.Conn.Response{
     method: :post | :get | :put | :delete,
     payload: %{},
     opts: Keyword.t
