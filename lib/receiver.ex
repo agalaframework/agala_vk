@@ -43,10 +43,10 @@ defmodule Agala.Provider.Vk.Receiver do
     },
     bot_params
   ) do
-    bot_params |> put_in([:private, :ts], ts)
     # We are seting ts to the safe place in order to get if this poller will
     # be restarted
     Agala.set(bot_params, :poll_server_ts, ts)
+    bot_params |> put_in([:private, :ts], ts)
   end
   defp resolve_updates(
     {
@@ -59,8 +59,8 @@ defmodule Agala.Provider.Vk.Receiver do
     bot_params
   ) do
     Logger.debug "History is corrupted, resending with new ts..."
-    bot_params |> put_in([:private, :ts], ts)
     Agala.set(bot_params, :poll_server_ts, ts)
+    bot_params |> put_in([:private, :ts], ts)
   end
   defp resolve_updates(
     {
@@ -104,6 +104,7 @@ defmodule Agala.Provider.Vk.Receiver do
     Logger.debug fn -> "Response body is:\n #{inspect(updates)}" end
     updates
     |> Enum.each(&(process_message(&1, bot_params)))
+    Agala.set(bot_params, :poll_server_ts, ts)
     bot_params |> put_in([:private, :ts], ts)
   end
   defp resolve_updates({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, bot_params) do
