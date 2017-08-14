@@ -71,4 +71,10 @@ defmodule Agala.Provider.Vk do
     |> Keyword.put(:recv_timeout, get_in(bot_params, [:provider_params, source]) || 5000)
     |> Keyword.put(:timeout, get_in(bot_params, [:provider_params, :timeout]) || 8000)
   end
+
+  defmacro __using__(:handler) do
+    quote location: :keep do
+      import Agala.Provider.Vk.Helpers
+    end
+  end
 end
