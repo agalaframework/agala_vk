@@ -26,10 +26,26 @@ defmodule Agala.Provider.Vk.Helpers do
       method: :post,
       payload: %{
         endpoint: "messages.send",
-        body: create_body(%{user_id: user_id, message: message}, opts),
+        body: create_body(%{
+          user_id: user_id,
+          message: message,
+          random_id: random_id(user_id)
+        }, opts),
         headers: @headers
       }
     })
     |> Map.put(:responser_name, name)
+  end
+
+  defp random_id(user_id) do
+    :erlang.term_to_binary({
+      user_id,
+      DateTime.utc_now
+    })
+    |> :erlang.md5
+    |> Base.encode16
+    |> String.replace(~r/[ABCDEF]/, "")
+    |> Integer.parse
+    |> elem(0)
   end
 end
