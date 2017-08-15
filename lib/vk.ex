@@ -1,5 +1,6 @@
 defmodule Agala.Provider.Vk do
   require Logger
+  use Agala.Provider.Vk.Responser
   @moduledoc """
   Module providing adapter for Vk
   """

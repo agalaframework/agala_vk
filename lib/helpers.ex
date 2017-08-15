@@ -25,7 +25,7 @@ defmodule Agala.Provider.Vk.Helpers do
     Map.put(conn, :response, %Agala.Provider.Vk.Conn.Response{
       method: :post,
       payload: %{
-        endpoint: Vk.base_url("messages.send"),
+        endpoint: "messages.send",
         body: create_body(%{user_id: user_id, message: message}, opts),
         headers: @headers
       }

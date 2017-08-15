@@ -23,7 +23,7 @@ defmodule Agala.Provider.Vk.Responser do
         end)
       end
 
-      defp create_url(conn = %Agala.Conn{response: %{payload: %{endpoint: endpoint}}}, bot_params) when is_function(url) do
+      defp create_url(conn = %Agala.Conn{response: %{payload: %{endpoint: endpoint}}}, bot_params) do
         Vk.base_url(endpoint)
       end
 
