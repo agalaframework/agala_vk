@@ -23,7 +23,7 @@ defmodule Agala.Provider.Vk.Mixfile do
     [
       {:agala, github: "agalaframework/agala", branch: "develop"},
       {:httpoison, "~> 0.12"},
-      {:poison, "~> 3.1"},
+      {:poison, ">= 1.5.0"},
       {:ex_doc, "~> 0.16", only: :dev},
       {:inch_ex,"~> 0.5", only: :docs},
       {:credo, "~> 0.8", only: [:dev, :test]}

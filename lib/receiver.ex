@@ -72,7 +72,7 @@ defmodule Agala.Provider.Vk.Receiver do
     },
     bot_params
   ) do
-    Logger.debug "LongPolling server params are corrupted, restarting reciever..."
+    Logger.debug "LongPolling server params are corrupted, restarting receiver..."
     bot_params |> put_in([:private, :restart], true)
   end
 
