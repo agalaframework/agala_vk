@@ -124,7 +124,7 @@ defmodule Agala.Provider.Vk.Receiver do
   defp process_message(message, bot_params) do
     # Cast received message to handle bank, there the message
     # will be proceeded throw handlers pipe
-    Agala.Bot.Handler.cast_to_chain(
+    Agala.Bot.HandlerPool.handle(
       message,
       bot_params
     )

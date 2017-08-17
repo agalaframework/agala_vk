@@ -75,7 +75,7 @@ defmodule Agala.Provider.Vk do
 
   defmacro __using__(:handler) do
     quote location: :keep do
-      import Agala.Provider.Vk.Helpers
+      alias Agala.Provider.Vk.Helpers.Messages
     end
   end
 end
