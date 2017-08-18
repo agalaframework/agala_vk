@@ -20,8 +20,8 @@ defmodule Agala.Provider.Vk do
       mode: set_mode(bot_params)
     })
     case module do
-      :receiver -> init_longpolling_server(bot_params)
-      :responser -> bot_params
+      :receiver -> {:ok, init_longpolling_server(bot_params)}
+      :responser -> {:ok, bot_params}
     end
   end
 
@@ -29,13 +29,12 @@ defmodule Agala.Provider.Vk do
     with {:ok, %HTTPoison.Response{body: body}} <- get_longpolling_server_params(bot_params),
          {:ok, %{"response" => server_params}} <- Poison.decode(body)
     do
-    {:ok, bot_params
+      bot_params
       |> put_in([:private, :key], server_params["key"])
       |> put_in([:private, :server], server_params["server"])
       # If server was corrupted, we dont want to lose updates so we shift ts a bit back
       |> put_in([:private, :ts], Agala.get(bot_params, :poll_server_ts) || server_params["ts"])
       |> put_in([:private, :pts], server_params["pts"])
-    }
     else
     {:error, _} ->
       Logger.error("VK server unreachable.")
