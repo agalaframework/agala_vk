@@ -1,6 +1,6 @@
 defmodule Agala.Provider.Vk do
+  use Agala.Provider
   require Logger
-  use Agala.Provider.Vk.Responser
   @moduledoc """
   Module providing adapter for Vk
   """
@@ -19,23 +19,30 @@ defmodule Agala.Provider.Vk do
       wait: get_in(bot_params, [:provider_params, :poll_wait]) || 25,
       mode: set_mode(bot_params)
     })
+    case module do
+      :receiver -> init_longpolling_server(bot_params)
+      :responser -> bot_params
+    end
+  end
+
+  def init_longpolling_server(bot_params) do
     with {:ok, %HTTPoison.Response{body: body}} <- get_longpolling_server_params(bot_params),
          {:ok, %{"response" => server_params}} <- Poison.decode(body)
     do
-      {:ok, bot_params
-        |> put_in([:private, :key], server_params["key"])
-        |> put_in([:private, :server], server_params["server"])
-        # If server was corrupted, we dont want to lose updates so we shift ts a bit back
-        |> put_in([:private, :ts], Agala.get(bot_params, :poll_server_ts) || server_params["ts"])
-        |> put_in([:private, :pts], server_params["pts"])
-      }
+    {:ok, bot_params
+      |> put_in([:private, :key], server_params["key"])
+      |> put_in([:private, :server], server_params["server"])
+      # If server was corrupted, we dont want to lose updates so we shift ts a bit back
+      |> put_in([:private, :ts], Agala.get(bot_params, :poll_server_ts) || server_params["ts"])
+      |> put_in([:private, :pts], server_params["pts"])
+    }
     else
-      {:error, _} ->
-        Logger.error("VK server unreachable.")
-        {:stop, :normal}
-      {:ok, %{"error" => error}} ->
-        Logger.error(error["error_msg"])
-        {:stop, :normal}
+    {:error, _} ->
+      Logger.error("VK server unreachable.")
+      {:stop, :normal}
+    {:ok, %{"error" => error}} ->
+      Logger.error(error["error_msg"])
+      {:stop, :normal}
     end
   end
 

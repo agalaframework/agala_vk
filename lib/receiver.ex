@@ -23,14 +23,14 @@ defmodule Agala.Provider.Vk.Receiver do
 
   defp get_updates_options(%BotParams{private: %{http_opts: http_opts}}), do: http_opts
 
-  def get_updates(bot_params = %BotParams{}) do
+  def get_updates(notify_with, bot_params = %BotParams{}) do
     HTTPoison.get(
       get_updates_url(bot_params),            # url
       [{"Content-Type", "application/json"}], # headers
       get_updates_options(bot_params)         # opts
     )
     |> parse_body
-    |> resolve_updates(bot_params)
+    |> resolve_updates(notify_with, bot_params)
   end
 
   defp resolve_updates(
@@ -41,6 +41,7 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"ts" => ts, "updates" => []}
       }
     },
+    _,
     bot_params
   ) do
     # We are seting ts to the safe place in order to get if this poller will
@@ -56,6 +57,7 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"ts" => ts, "failed" => 1}
       }
     },
+    _,
     bot_params
   ) do
     Logger.debug "History is corrupted, resending with new ts..."
@@ -70,6 +72,7 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"failed" => _}
       }
     },
+    _,
     bot_params
   ) do
     Logger.debug "LongPolling server params are corrupted, restarting receiver..."
@@ -84,6 +87,7 @@ defmodule Agala.Provider.Vk.Receiver do
         reason: :timeout
       }
     },
+    _,
     bot_params
   ) do
     # This is just failed long polling, simply restart
@@ -99,19 +103,20 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"ts" => ts, "updates" => updates}
       }
     },
+    notify_with,
     bot_params
   ) do
     Logger.debug fn -> "Response body is:\n #{inspect(updates)}" end
     updates
-    |> Enum.each(&(process_message(&1, bot_params)))
+    |> Enum.each(notify_with)
     Agala.set(bot_params, :poll_server_ts, ts)
     bot_params |> put_in([:private, :ts], ts)
   end
-  defp resolve_updates({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, bot_params) do
+  defp resolve_updates({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, _, bot_params) do
     Logger.warn("HTTP response ended with status code #{status_code}\nand body:\n#{body}")
     bot_params
   end
-  defp resolve_updates({:error, err}, bot_params) do
+  defp resolve_updates({:error, err}, _, bot_params) do
     Logger.warn("#{inspect err}")
     bot_params
   end
@@ -120,13 +125,4 @@ defmodule Agala.Provider.Vk.Receiver do
     {:ok, %HTTPoison.Response{resp | body: Poison.decode!(body)}}
   end
   defp parse_body(default), do: default
-
-  defp process_message(message, bot_params) do
-    # Cast received message to handle bank, there the message
-    # will be proceeded throw handlers pipe
-    Agala.Bot.HandlerPool.handle(
-      message,
-      bot_params
-    )
-  end
 end
