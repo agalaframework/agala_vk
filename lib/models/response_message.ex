@@ -1,4 +1,4 @@
-defmodule Agala.Provider.Vk.Models.ResponseMessage do
+defmodule Agala.Provider.Vk.Model.ResponseMessage do
   defstruct [
     :user_id,
     :random_id,
