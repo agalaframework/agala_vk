@@ -1,7 +1,7 @@
 defmodule Agala.Provider.Vk.Responser do
   use Agala.Bot.Responser
 
-  defp create_body(conn = %Agala.Conn{response: %{payload: %{body: body}}}, bot_params) when is_map(body) do
+  defp create_body(%Agala.Conn{response: %{payload: %{body: body}}}, bot_params) when is_map(body) do
     {
       :form,
       body
@@ -10,7 +10,7 @@ defmodule Agala.Provider.Vk.Responser do
       |> Enum.into(Keyword.new)
     }
   end
-  defp create_body(_) do
+  defp create_body(_, _bot_params) do
     Logger.debug(fn ->
       """
       Your Agala.Conn doesn't have response body value in a propriate form.
