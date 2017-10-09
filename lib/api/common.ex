@@ -3,7 +3,7 @@ defmodule Agala.Provider.Vk.Helpers.Common do
     quote location: :keep do
       @headers [{"Content-Type", "application/json"}]
 
-      defp create_body(map, opts) do
+      defp create_body(map, opts \\ []) do
         Map.merge(map, Enum.into(opts, %{}), fn _, v1, _ -> v1 end)
       end
 

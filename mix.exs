@@ -4,7 +4,7 @@ defmodule Agala.Provider.Vk.Mixfile do
   def project do
     [
       app: :agala_vk,
-      version: "0.1.0-rc1",
+      version: "0.1.0-rc3",
       elixir: "~> 1.4",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -24,7 +24,8 @@ defmodule Agala.Provider.Vk.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:agala, "~> 2.0.0-rc1"},
+      # {:agala, "~> 2.0.0-rc1"},
+      {:agala, git: "https://github.com/agalaframework/agala", branch: "develop"},
       {:httpoison, "~> 0.12"},
       {:poison, ">= 1.5.0"},
       {:ex_doc, "~> 0.16", only: :dev},

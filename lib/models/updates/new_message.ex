@@ -1,4 +1,4 @@
-defmodule Agala.Provider.Vk.Model.Update.NewMessage do
+defmodule Agala.Provider.Vk.Model.Updates.NewMessage do
   defstruct [
     message_id: nil,
     flags: nil,
