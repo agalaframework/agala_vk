@@ -45,7 +45,7 @@ defmodule Agala.Provider.Vk.Chain.Parser do
     }
   end
 
-  def parse_request([7,
+  def parse_request([61,
     user_id,
     1
   ]) do
