@@ -4,8 +4,8 @@ defmodule Agala.Provider.Vk.Mixfile do
   def project do
     [
       app: :agala_vk,
-      version: "0.1.0-rc3",
-      elixir: "~> 1.4",
+      version: "0.1.0",
+      elixir: "~> 1.5",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       description: description(),
