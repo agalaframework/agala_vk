@@ -25,7 +25,7 @@ defmodule Agala.Provider.Vk.Mixfile do
   defp deps do
     [
       # {:agala, "~> 2.0.0-rc1"},
-      {:agala, git: "https://github.com/agalaframework/agala", branch: "develop"},
+      {:agala, git: "https://github.com/agalaframework/agala", branch: "release/2.0.0"},
       {:httpoison, "~> 0.12"},
       {:poison, ">= 1.5.0"},
       {:ex_doc, "~> 0.16", only: :dev},
