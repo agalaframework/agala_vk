@@ -1,4 +1,4 @@
-%{"agala": {:hex, :agala, "2.0.1", "7a74c0b8df24e52101a333501b9381bcd2da28ff4edc93e5a6c5c5ba458e4192", [:mix], [{:excoveralls, "~> 0.7.4", [hex: :excoveralls, repo: "hexpm", optional: false]}], "hexpm"},
+%{"agala": {:hex, :agala, "2.0.2", "9a4706cafb4f371ceca503a60b317c33b78fc7e618676ffa5bffba7bcf931748", [:mix], [{:excoveralls, "~> 0.7.4", [hex: :excoveralls, repo: "hexpm", optional: false]}], "hexpm"},
   "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [], [], "hexpm"},
   "certifi": {:hex, :certifi, "2.0.0", "a0c0e475107135f76b8c1d5bc7efb33cd3815cb3cf3dea7aefdd174dabead064", [], [], "hexpm"},
   "credo": {:hex, :credo, "0.8.8", "990e7844a8d06ebacd88744a55853a83b74270b8a8461c55a4d0334b8e1736c9", [], [{:bunt, "~> 0.2.0", [hex: :bunt, repo: "hexpm", optional: false]}], "hexpm"},
