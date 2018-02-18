@@ -1,5 +1,5 @@
 defmodule Agala.Provider.Vk.Chain.Parser do
-  alias Agala.Provider.Vk.Model.Updates.{NewMessage, ReadOutgoing, DialogTyping}
+  alias Agala.Provider.Vk.Model.Updates.{NewMessage, ReadOutgoing, DialogTyping, ReadIngoing}
 
   def init(_) do
     []
@@ -34,6 +34,15 @@ defmodule Agala.Provider.Vk.Chain.Parser do
     }
   end
 
+  def parse_request([6,
+    user_id,
+    last_vk_message_id
+  ]) do
+    %ReadIngoing{
+      user_id: user_id,
+      last_vk_message_id: last_vk_message_id
+    }
+  end
 
   def parse_request([7,
     user_id,
