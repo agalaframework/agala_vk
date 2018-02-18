@@ -1,5 +1,6 @@
 defmodule Agala.Provider.Vk.Chain.Parser do
   alias Agala.Provider.Vk.Model.Updates.{NewMessage, ReadOutgoing, DialogTyping, ReadIngoing}
+  alias Agala.Provider.Vk.Model.Updates.{LeftMenuCounterEqual, SetDialogFlags, UpdateDialogFlags, ResetDialogFlags}
 
   def init(_) do
     []
@@ -44,6 +45,36 @@ defmodule Agala.Provider.Vk.Chain.Parser do
     }
   end
 
+  def parse_request([10,
+    peer_id,
+    mask
+  ]) do
+    %ResetDialogFlags{
+      peer_id: peer_id,
+      mask: mask
+    }
+  end
+
+  def parse_request([11,
+    peer_id,
+    mask
+  ]) do
+    %UpdateDialogFlags{
+      peer_id: peer_id,
+      mask: mask
+    }
+  end
+
+  def parse_request([12,
+    peer_id,
+    mask
+  ]) do
+    %SetDialogFlags{
+      peer_id: peer_id,
+      mask: mask
+    }
+  end
+
   def parse_request([7,
     user_id,
     last_vk_message_id
@@ -60,6 +91,15 @@ defmodule Agala.Provider.Vk.Chain.Parser do
   ]) do
     %DialogTyping{
       user_id: user_id
+    }
+  end
+
+  def parse_request([80,
+    count,
+    0
+  ]) do
+    %LeftMenuCounterEqual{
+      count: count
     }
   end
 
