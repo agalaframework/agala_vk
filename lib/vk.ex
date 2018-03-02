@@ -83,7 +83,10 @@ defmodule Agala.Provider.Vk do
     quote location: :keep do
       alias Agala.Provider.Vk.Helpers.{
         Messages,
-        Users
+        Users,
+        Photos,
+        Common,
+        Docs
       }
     end
   end
