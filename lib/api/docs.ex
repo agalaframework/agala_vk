@@ -32,15 +32,15 @@ defmodule Agala.Provider.Vk.Helpers.Docs do
   ]
   """
   def save(conn, params, opts \\ [])
-  def save(conn, %{file: file} = params, opts) do
+  def save(conn, %{file: _file} = params, opts) do
     perform_save(conn, params, opts)
   end
 
-  def save(conn, %{"file" => file} = params, opts) do
+  def save(conn, %{"file" => _file} = params, opts) do
     perform_save(conn, params, opts)
   end
 
-  def save(conn, params, opts) do
+  def save(conn, params, _opts) do
     Logger.error(fn -> "You must pass url in params. Given params: #{inspect(params)}." end)
     conn
   end

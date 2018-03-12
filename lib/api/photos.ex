@@ -55,7 +55,7 @@ defmodule Agala.Provider.Vk.Helpers.Photos do
     photo_sizes
   ]
   """
-  def getById(conn, params, opts \\ []) do
+  def get_by_id(conn, params, opts \\ []) do
     Map.put(conn, :response, %Agala.Provider.Vk.Conn.Response{
       method: :post,
       payload: %{
