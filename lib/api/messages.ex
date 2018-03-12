@@ -16,16 +16,15 @@ defmodule Agala.Provider.Vk.Helpers.Messages do
     sticker_id,
   ]
   """
-  def send(conn, user_id, message, opts \\ []) do
+  def send(conn, params, opts \\ []) do
     Map.put(conn, :response, %Agala.Provider.Vk.Conn.Response{
       method: :post,
       payload: %{
         endpoint: "messages.send",
-        body: create_body(%{
-          user_id: user_id,
-          message: message,
-          random_id: random_id(user_id)
-        }, opts),
+        body: create_body(
+          Map.put_new(params, :random_id, random_id(params.user_id)),
+          opts
+        ),
         headers: @headers
       }
     })

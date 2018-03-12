@@ -81,9 +81,12 @@ defmodule Agala.Provider.Vk do
 
   defmacro __using__(:handler) do
     quote location: :keep do
+      use Agala.Provider.Vk.Helpers.Common
       alias Agala.Provider.Vk.Helpers.{
         Messages,
-        Users
+        Users,
+        Photos,
+        Docs
       }
     end
   end
