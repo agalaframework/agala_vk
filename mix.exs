@@ -25,7 +25,7 @@ defmodule Agala.Provider.Vk.Mixfile do
   defp deps do
     [
       {:agala, "~> 2.0"},
-      {:httpoison, "~> 0.12"},
+      {:httpoison, "~> 1.1"},
       {:poison, ">= 1.5.0"},
       {:ex_doc, "~> 0.16", only: :dev},
       {:inch_ex,"~> 0.5", only: :docs},
