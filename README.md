@@ -10,7 +10,7 @@ by adding `agala_vk` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:agala_vk, "~> 0.1.0"}
+    {:agala_vk, "~> 0.1"}
   ]
 end
 ```
