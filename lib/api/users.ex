@@ -25,5 +25,6 @@ defmodule Agala.Provider.Vk.Helpers.Users do
         headers: @headers
       }
     })
+    |> perform_request()
   end
 end

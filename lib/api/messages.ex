@@ -29,6 +29,7 @@ defmodule Agala.Provider.Vk.Helpers.Messages do
         headers: @headers
       }
     })
+    |> perform_request()
   end
 
   def mark_as_read(conn, peer_id, start_message_id) do
@@ -43,6 +44,7 @@ defmodule Agala.Provider.Vk.Helpers.Messages do
         headers: @headers
       }
     })
+    |> perform_request()
   end
 
   def set_activity(conn, user_id, type, peer_id) do
@@ -58,5 +60,6 @@ defmodule Agala.Provider.Vk.Helpers.Messages do
         headers: @headers
       }
     })
+    |> perform_request()
   end
 end

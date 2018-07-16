@@ -1,10 +1,33 @@
-defmodule Agala.Provider.Vk.Receiver do
+defmodule Agala.Provider.Vk.Poller do
   @moduledoc """
-  Main worker module
+
+  ### How poller works?
+
+  Poller gets all needed options in `start_link/1` argument. In these options `:chain`
+  is specified.
+
+  So the Poller make periodical work:
+
+  1. HTTP get new updates from Telegram server
+  2. Split this array into separate event
+  3. Handle particular each event with chain
+  4. Restart cycle again
   """
-  @vsn 2
-  use Agala.Bot.Receiver
+  use Agala.Bot.Common.Poller
   alias Agala.BotParams
+
+  #######################################################################################
+  ### Initialize section
+  #######################################################################################
+
+  @spec bootstrap(Agala.BotParams.t()) :: {:ok, Agala.BotParams}
+  defdelegate bootstrap(bot_params), to: Agala.Provider.Vk.Poller.Bootstrap
+
+  #######################################################################################
+  ### Get updates section
+  #######################################################################################
+
+  @vsn 2
 
   defp get_updates_url(%BotParams{private: %{
     key: key,
@@ -23,18 +46,24 @@ defmodule Agala.Provider.Vk.Receiver do
 
   defp get_updates_options(%BotParams{private: %{http_opts: http_opts}}), do: http_opts
 
-  def get_updates(notify_with, bot_params = %BotParams{}) do
+  defp parse_body({:ok, resp = %HTTPoison.Response{body: body}}) do
+    {:ok, %HTTPoison.Response{resp | body: Poison.decode!(body)}}
+  end
+  defp parse_body(default), do: default
+
+  def get_updates(bot_params = %BotParams{}) do
     HTTPoison.get(
       get_updates_url(bot_params),            # url
       [{"Content-Type", "application/json"}], # headers
       get_updates_options(bot_params)         # opts
     )
-    |> parse_body
-    |> resolve_updates(notify_with, bot_params)
+    |> parse_body()
+    |> resolve_updates(bot_params)
   end
 
+  ######################################################################################
   ### Known errors
-  ### -----------------------------------------------------------------------------
+  ######################################################################################
 
   ### Corrupted history
   defp resolve_updates(
@@ -45,12 +74,11 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"ts" => ts, "failed" => 1}
       }
     },
-    _,
     bot_params
   ) do
     Logger.debug "Event history is corrupted, resending with new timestamp..."
     Agala.set(bot_params, :poll_server_ts, ts)
-    bot_params |> put_in([:private, :ts], ts)
+    {[], bot_params |> put_in([:private, :ts], ts)}
   end
 
   ### Key is expired
@@ -62,11 +90,10 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"failed" => 2}
       }
     },
-    _,
     bot_params
   ) do
     Logger.debug "Key's active period expired. Retrieving new key..."
-    bot_params |> put_in([:common, :restart], true)
+    {[], bot_params |> put_in([:common, :restart], true)}
   end
 
   ### User information is lost
@@ -78,11 +105,10 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"failed" => 3}
       }
     },
-    _,
     bot_params
   ) do
     Logger.debug "User information was lost. Retrieving new key and timestamp..."
-    bot_params |> put_in([:common, :restart], true)
+    {[], bot_params |> put_in([:common, :restart], true)}
   end
 
   ### Version invalid
@@ -94,11 +120,10 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"failed" => 4}
       }
     },
-    _,
     bot_params
   ) do
     Logger.debug "Invalid version number was passed. Restarting..."
-    bot_params |> put_in([:common, :restart], true)
+    {[], bot_params |> put_in([:common, :restart], true)}
   end
   ### -----------------------------------------------------------------------------
 
@@ -110,13 +135,12 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"ts" => ts, "updates" => []}
       }
     },
-    _,
     bot_params
   ) do
     # We are seting ts to the safe place in order to get if this poller will
     # be restarted
     Agala.set(bot_params, :poll_server_ts, ts)
-    bot_params |> put_in([:private, :ts], ts)
+    {[], bot_params |> put_in([:private, :ts], ts)}
   end
 
 
@@ -128,12 +152,11 @@ defmodule Agala.Provider.Vk.Receiver do
         reason: :timeout
       }
     },
-    _,
     bot_params
   ) do
     # This is just failed long polling, simply restart
     Logger.debug("Long polling request ended with timeout, resend to poll")
-    bot_params
+    {[], bot_params}
   end
 
   defp resolve_updates(
@@ -144,26 +167,18 @@ defmodule Agala.Provider.Vk.Receiver do
         body: %{"ts" => ts, "updates" => updates}
       }
     },
-    notify_with,
     bot_params
   ) do
     Logger.debug fn -> "Response body is:\n #{inspect updates}" end
-    updates
-    |> Enum.each(notify_with)
     Agala.set(bot_params, :poll_server_ts, ts)
-    bot_params |> put_in([:private, :ts], ts)
+    {updates, bot_params |> put_in([:private, :ts], ts)}
   end
   defp resolve_updates({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, _, bot_params) do
     Logger.warn("HTTP response ended with status code #{inspect status_code}\nand body:\n#{inspect body}")
-    bot_params
+    {[], bot_params}
   end
   defp resolve_updates({:error, err}, _, bot_params) do
     Logger.warn("#{inspect err}")
-    bot_params
+    {[], bot_params}
   end
-
-  defp parse_body({:ok, resp = %HTTPoison.Response{body: body}}) do
-    {:ok, %HTTPoison.Response{resp | body: Poison.decode!(body)}}
-  end
-  defp parse_body(default), do: default
 end
