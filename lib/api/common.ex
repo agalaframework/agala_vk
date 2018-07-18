@@ -9,6 +9,8 @@ defmodule Agala.Provider.Vk.Helpers.Common do
         Map.merge(map, Enum.into(opts, %{}), fn _, v1, _ -> v1 end)
       end
 
+      # This method generates random id for outcoming messages
+      # in order to differentiate incoming and outcoming messages
       defp random_id(user_id) do
         :erlang.term_to_binary({
           user_id,
