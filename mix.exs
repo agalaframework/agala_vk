@@ -24,10 +24,8 @@ defmodule Agala.Provider.Vk.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:agala, "~> 2.0"},
-      {:agala, path: "../agala"},
+      {:agala, "~> 3.0"},
       {:httpoison, "~> 1.2"},
-      {:poison, ">= 1.5.0"},
       {:jason, "~> 1.1"},
       {:ex_doc, "~> 0.16", only: :dev},
       {:inch_ex, "~> 0.5", only: :docs},
