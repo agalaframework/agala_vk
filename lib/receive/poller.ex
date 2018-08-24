@@ -47,7 +47,7 @@ defmodule Agala.Provider.Vk.Poller do
   defp get_updates_options(%BotParams{private: %{http_opts: http_opts}}), do: http_opts
 
   defp parse_body({:ok, resp = %HTTPoison.Response{body: body}}) do
-    {:ok, %HTTPoison.Response{resp | body: Poison.decode!(body)}}
+    {:ok, %HTTPoison.Response{resp | body: Jason.decode!(body)}}
   end
   defp parse_body(default), do: default
 

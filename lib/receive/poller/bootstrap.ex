@@ -24,7 +24,7 @@ defmodule Agala.Provider.Vk.Poller.Bootstrap do
 
   defp init_longpolling_server(bot_params) do
     with {:ok, %HTTPoison.Response{body: body}} <- get_longpolling_server_params(bot_params),
-         {:ok, %{"response" => server_params}} <- Poison.decode(body) do
+         {:ok, %{"response" => server_params}} <- Jason.decode(body) do
       bot_params
       |> put_in([:private, :key], server_params["key"])
       |> put_in([:private, :server], server_params["server"])

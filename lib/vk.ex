@@ -27,7 +27,7 @@ defmodule Agala.Provider.Vk do
 
   def init_longpolling_server(bot_params) do
     with {:ok, %HTTPoison.Response{body: body}} <- get_longpolling_server_params(bot_params),
-         {:ok, %{"response" => server_params}} <- Poison.decode(body)
+         {:ok, %{"response" => server_params}} <- Jason.decode(body)
     do
       bot_params
       |> put_in([:private, :key], server_params["key"])
