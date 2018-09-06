@@ -33,6 +33,75 @@ defmodule Agala.Provider.Vk.Receiver do
     |> resolve_updates(notify_with, bot_params)
   end
 
+  ### Known errors
+  ### -----------------------------------------------------------------------------
+
+  ### Corrupted history
+  defp resolve_updates(
+    {
+      :ok,
+      %HTTPoison.Response{
+        status_code: _,
+        body: %{"ts" => ts, "failed" => 1}
+      }
+    },
+    _,
+    bot_params
+  ) do
+    Logger.debug "Event history is corrupted, resending with new timestamp..."
+    Agala.set(bot_params, :poll_server_ts, ts)
+    bot_params |> put_in([:private, :ts], ts)
+  end
+
+  ### Key is expired
+  defp resolve_updates(
+    {
+      :ok,
+      %HTTPoison.Response{
+        status_code: _,
+        body: %{"failed" => 2}
+      }
+    },
+    _,
+    bot_params
+  ) do
+    Logger.debug "Key's active period expired. Retrieving new key..."
+    bot_params |> put_in([:common, :restart], true)
+  end
+
+  ### User information is lost
+  defp resolve_updates(
+    {
+      :ok,
+      %HTTPoison.Response{
+        status_code: _,
+        body: %{"failed" => 3}
+      }
+    },
+    _,
+    bot_params
+  ) do
+    Logger.debug "User information was lost. Retrieving new key and timestamp..."
+    bot_params |> put_in([:common, :restart], true)
+  end
+
+  ### Version invalid
+  defp resolve_updates(
+    {
+      :ok,
+      %HTTPoison.Response{
+        status_code: _,
+        body: %{"failed" => 4}
+      }
+    },
+    _,
+    bot_params
+  ) do
+    Logger.debug "Invalid version number was passed. Restarting..."
+    bot_params |> put_in([:common, :restart], true)
+  end
+  ### -----------------------------------------------------------------------------
+
   defp resolve_updates(
     {
       :ok,
@@ -49,35 +118,7 @@ defmodule Agala.Provider.Vk.Receiver do
     Agala.set(bot_params, :poll_server_ts, ts)
     bot_params |> put_in([:private, :ts], ts)
   end
-  defp resolve_updates(
-    {
-      :ok,
-      %HTTPoison.Response{
-        status_code: 200,
-        body: %{"ts" => ts, "failed" => 1}
-      }
-    },
-    _,
-    bot_params
-  ) do
-    Logger.debug "History is corrupted, resending with new ts..."
-    Agala.set(bot_params, :poll_server_ts, ts)
-    bot_params |> put_in([:private, :ts], ts)
-  end
-  defp resolve_updates(
-    {
-      :ok,
-      %HTTPoison.Response{
-        status_code: 200,
-        body: %{"failed" => _}
-      }
-    },
-    _,
-    bot_params
-  ) do
-    Logger.debug "LongPolling server params are corrupted, restarting receiver..."
-    bot_params |> put_in([:private, :restart], true)
-  end
+
 
   defp resolve_updates(
     {
@@ -106,14 +147,14 @@ defmodule Agala.Provider.Vk.Receiver do
     notify_with,
     bot_params
   ) do
-    Logger.debug fn -> "Response body is:\n #{inspect(updates)}" end
+    Logger.debug fn -> "Response body is:\n #{inspect updates}" end
     updates
     |> Enum.each(notify_with)
     Agala.set(bot_params, :poll_server_ts, ts)
     bot_params |> put_in([:private, :ts], ts)
   end
   defp resolve_updates({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, _, bot_params) do
-    Logger.warn("HTTP response ended with status code #{status_code}\nand body:\n#{body}")
+    Logger.warn("HTTP response ended with status code #{inspect status_code}\nand body:\n#{inspect body}")
     bot_params
   end
   defp resolve_updates({:error, err}, _, bot_params) do

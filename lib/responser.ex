@@ -1,16 +1,16 @@
 defmodule Agala.Provider.Vk.Responser do
   use Agala.Bot.Responser
 
-  defp create_body(conn = %Agala.Conn{response: %{payload: %{body: body}}}) when is_map(body) do
+  defp create_body(%Agala.Conn{response: %{payload: %{body: body}}}, bot_params) when is_map(body) do
     {
       :form,
       body
       |> Map.put(:v, Agala.Provider.Vk.api_version())
-      |> Map.put(:access_token, conn.request_bot_params.provider_params.token)
+      |> Map.put(:access_token, bot_params.provider_params.token)
       |> Enum.into(Keyword.new)
     }
   end
-  defp create_body(_) do
+  defp create_body(_, _bot_params) do
     Logger.debug(fn ->
       """
       Your Agala.Conn doesn't have response body value in a propriate form.
@@ -30,9 +30,9 @@ defmodule Agala.Provider.Vk.Responser do
     HTTPoison.request(
       conn.response.method,
       create_url(conn),
-      create_body(conn),
-      Map.get(conn.response.payload, :headers, []),
-      Map.get(conn.response.payload, :http_opts) || Map.get(bot_params.private, :http_opts) || []
+      create_body(conn, bot_params),
+      get_in(conn, [:response, :payload, :headers]) || [],
+      get_in(conn, [:response, :payload, :http_opts]) || get_in(bot_params, [:private, :http_opts]) || []
     )
   end
 end
