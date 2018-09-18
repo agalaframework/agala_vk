@@ -28,7 +28,7 @@ defmodule Agala.Provider.Vk.Mixfile do
       {:httpoison, "~> 1.2"},
       {:jason, "~> 1.1"},
       {:ex_doc, "~> 0.16", only: :dev},
-      {:inch_ex, "~> 0.5", only: :docs},
+      {:inch_ex, "~> 1.0", only: :docs},
       {:credo, "~> 0.8", only: [:dev, :test]}
     ]
   end
