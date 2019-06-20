@@ -59,4 +59,17 @@ defmodule Agala.Provider.Vk.Helpers.Messages do
       }
     })
   end
+
+  def get_by_id(conn, message_ids) do
+    Map.put(conn, :response, %Agala.Provider.Vk.Conn.Response{
+      method: :post,
+      payload: %{
+        endpoint: "messages.getById",
+        body: create_body(%{
+          message_ids: message_ids
+        }),
+        headers: @headers
+      }
+    })
+  end
 end
