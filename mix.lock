@@ -1,5 +1,5 @@
 %{
-  "agala": {:hex, :agala, "2.5.0", "e619345343b060312133564c7f4c05fd1b9f34a5c3917dcd5bfddbdbe1a68587", [:mix], [], "hexpm"},
+  "agala": {:git, "https://github.com/IT-CTI/agala.git", "3762012c8c5b180956fdd5b5a3625a4ba8c38bec", [branch: "2.5"]},
   "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [:mix], [], "hexpm"},
   "certifi": {:hex, :certifi, "2.3.1", "d0f424232390bf47d82da8478022301c561cf6445b5b5fb6a84d49a9e76d2639", [:rebar3], [{:parse_trans, "3.2.0", [hex: :parse_trans, repo: "hexpm", optional: false]}], "hexpm"},
   "credo": {:hex, :credo, "0.9.1", "f021affa11b32a94dc2e807a6472ce0914289c9132f99644a97fc84432b202a1", [:mix], [{:bunt, "~> 0.2.0", [hex: :bunt, repo: "hexpm", optional: false]}, {:poison, ">= 0.0.0", [hex: :poison, repo: "hexpm", optional: false]}], "hexpm"},

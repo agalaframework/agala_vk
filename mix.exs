@@ -24,7 +24,7 @@ defmodule Agala.Provider.Vk.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:agala, "~> 2.5"},
+      {:agala, github: "IT-CTI/agala", branch: "2.5"},
       {:httpoison, "~> 1.1"},
       {:poison, ">= 1.5.0"},
       {:ex_doc, "~> 0.16", only: :dev},
