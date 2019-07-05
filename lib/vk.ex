@@ -36,8 +36,8 @@ defmodule Agala.Provider.Vk do
       |> put_in([:private, :ts], Agala.get(bot_params, :poll_server_ts) || server_params["ts"])
       |> put_in([:private, :pts], server_params["pts"])
     else
-    {:error, _} ->
-      Logger.error("VK server unreachable.")
+    {:error, o} ->
+      Logger.error("VK server connection error: #{inspect(o)}")
       {:stop, :normal}
     {:ok, %{"error" => error}} ->
       Logger.error(error["error_msg"])
@@ -56,7 +56,7 @@ defmodule Agala.Provider.Vk do
         access_token: bot_params.provider_params.token,
         v: api_version()},
       @headers,
-      Map.get(bot_params, :hackney_opts, []) |> set_timeout(bot_params, :responser)
+      (get_in(bot_params, [:provider_params, :hackney_opts]) || []) |> set_timeout(bot_params, :responser)
     )
   end
 
