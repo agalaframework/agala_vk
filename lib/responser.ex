@@ -32,7 +32,7 @@ defmodule Agala.Provider.Vk.Responser do
       create_url(conn),
       create_body(conn, bot_params),
       get_in(conn, [:response, :payload, :headers]) || [],
-      get_in(conn, [:response, :payload, :http_opts]) || get_in(bot_params, [:private, :http_opts]) || []
+      get_in(conn, [:response, :payload, :http_opts]) || get_in(bot_params, [:private, :http_opts]) || get_in(bot_params, [:provider_params, :hackney_opts]) || []
     )
   end
 end
