@@ -9,7 +9,7 @@ defmodule Agala.Provider.Vk.Helpers.Common do
           url,
           create_body_multipart(params, opts),
           @multipart_headers,
-          Map.get(opts, :http_opts, [])
+          get_in(opts, [:http_opts]) || []
         )
       end
 
