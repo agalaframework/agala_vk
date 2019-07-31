@@ -7,7 +7,7 @@ defmodule Agala.Provider.Vk.Helpers.Common do
       def send_file_to_url(url, params, opts \\ %{}) do
         HTTPoison.post(
           url,
-          create_body_multipart(params, opts),
+          create_body_multipart(params),
           @multipart_headers,
           get_in(opts, [:http_opts]) || []
         )
