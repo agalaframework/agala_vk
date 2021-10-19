@@ -18,7 +18,7 @@ defmodule Agala.Provider.Vk.Receiver do
     "&ts="<>Integer.to_string(ts)<>
     "&wait="<>Integer.to_string(wait)<>
     "&mode="<>Integer.to_string(mode)<>
-    "&version"<>Integer.to_string(@vsn)
+    "&v"<>Integer.to_string(@vsn)
   end
 
   defp get_updates_options(%BotParams{private: %{http_opts: http_opts}}), do: http_opts
